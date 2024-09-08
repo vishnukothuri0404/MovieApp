@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies..."
+      - pip install --upgrade awscli
+      - aws --version
+      - docker info
+
+  pre_build:
+    commands:
+      - echo "Decrypting Docker password..."
+      - DOCKER_PASSWORD=$(aws ssm get-parameter --name mydockerpassword --with-decryption --query 'Parameter.Value' --output text)
+      
+      - echo "Logging in to Docker Hub..."
+      - docker login -u vishnukrishna1999 -p $DOCKER_PASSWORD
+
+  build:
+    commands:
+      - echo "build the docker image ..."
+      - docker build  -t vishnukrishna/movieapp .
+      - docker images
+
+  post_build:
+    commands:
+      - echo "final pushing image to docker hub .."
+      - docker push vishnukrishna/movieapp
+
+artifacts:
+  files:
+    - '**/*'
