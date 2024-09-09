@@ -1,0 +1,6 @@
+#!/bin/bash
+systemctl enable docker --now
+
+docker rm -f myweb
+
+docker run -dit --name myweb -p 80:80 vishnukrishna1999/movieapp
